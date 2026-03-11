@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONLYCLIK</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--surface:#111;--s2:#171717;--s3:#1f1f1f;
+  --border:#242424;--border2:#2e2e2e;
+  --accent:#c8ff00;--accent-d:#9dcc00;
+  --text:#f0f0f0;--t2:#777;--t3:#3a3a3a;
+  --danger:#ff3b3b;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+/* TOP */
+.topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0}
+.logo{font-size:1.1rem;font-weight:800;letter-spacing:-.05em;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px var(--accent)}50%{opacity:.4;box-shadow:0 0 3px var(--accent)}}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.top-tab{padding:6px 14px;border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;border:1px solid transparent;color:var(--t2)}
+.top-tab:hover{color:var(--text)}
+.top-tab.on{background:var(--s3);border-color:var(--border2);color:var(--text)}
+
+/* LAYOUT */
+.app{flex:1;display:flex;overflow:hidden}
+
+/* ── SEND PANEL ── */
+.send-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
+.send-card{width:100%;max-width:520px;display:flex;flex-direction:column;gap:0}
+
+.send-title{font-size:2rem;font-weight:800;letter-spacing:-.04em;margin-bottom:6px}
+.send-sub{font-size:.85rem;color:var(--t2);margin-bottom:28px}
+
+/* DROP ZONE */
+.drop-zone{
+  border:2px dashed var(--border2);border-radius:14px;
+  padding:40px 24px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;margin-bottom:16px;
+  background:var(--s2);
+}
+.drop-zone:hover,.drop-zone.over{border-color:var(--accent);background:rgba(200,255,0,.04)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-icon{font-size:2.4rem;margin-bottom:10px;opacity:.5}
+.dz-text{font-size:.88rem;font-weight:700;color:var(--t2);margin-bottom:4px}
+.dz-sub{font-size:.75rem;color:var(--t3)}
+
+/* FILE LIST */
+.file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.fitem{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:10px;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.fitem-icon{font-size:1.2rem;flex-shrink:0}
+.fitem-info{flex:1;overflow:hidden}
+.fitem-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fitem-size{font-size:.7rem;color:var(--t2);font-family:'DM Mono',monospace;margin-top:2px}
+.fitem-del{background:none;border:none;cursor:pointer;color:var(--t3);font-size:1rem;padding:4px;border-radius:5px;transition:all .12s;display:flex;align-items:center}
+.fitem-del:hover{color:var(--danger);background:rgba(255,59,59,.1)}
+
+/* FORM */
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.form-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t2)}
+.form-input{padding:10px 14px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;
+  font-family:'Syne',sans-serif;font-size:.85rem;color:var(--text);outline:none;transition:border .15s;width:100%}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--t3)}
+textarea.form-input{resize:none;height:72px;line-height:1.5}
+
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+
+/* BTN */
+.btn-send{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:10px;
+  font-family:'Syne',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;letter-spacing:-.01em;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-send:hover{background:var(--accent-d);transform:translateY(-1px)}
+.btn-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* SIZE INFO */
+.size-bar-wrap{margin-bottom:16px}
+.size-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:.72rem;color:var(--t2);font-family:'DM Mono',monospace}
+.size-track{height:3px;background:var(--border2);border-radius:99px;overflow:hidden}
+.size-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+
+/* ── TRANSFERS PANEL ── */
+.transfers-panel{flex:1;display:none;flex-direction:column;overflow:hidden}
+.transfers-panel.on{display:flex}
+.tp-header{padding:20px 28px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.tp-title{font-size:1rem;font-weight:800;letter-spacing:-.03em;flex:1}
+.tp-search{position:relative}
+.tp-search input{padding:7px 12px 7px 32px;background:var(--s2);border:1px solid var(--border);border-radius:7px;
+  font-family:'Syne',sans-serif;font-size:.8rem;color:var(--text);outline:none;transition:border .15s;width:200px}
+.tp-search input:focus{border-color:var(--accent)}
+.tp-search input::placeholder{color:var(--t3)}
+.tp-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none}
+.tp-list{flex:1;overflow-y:auto;padding:16px 28px;display:flex;flex-direction:column;gap:10px}
+.tp-list::-webkit-scrollbar{width:5px}
+.tp-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* TRANSFER CARD */
+.tcard{background:var(--s2);border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:fadeUp .2s ease}
+.tcard-header{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .12s}
+.tcard-header:hover{background:var(--s3)}
+.tcard-title{font-size:.88rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcard-meta{font-size:.72rem;color:var(--t2);font-family:'DM Mono',monospace;white-space:nowrap}
+.tcard-badge{padding:3px 9px;border-radius:99px;font-size:.68rem;font-weight:700;font-family:'DM Mono',monospace}
+.tcard-badge.active{background:rgba(200,255,0,.15);color:var(--accent)}
+.tcard-badge.expired{background:rgba(255,59,59,.1);color:var(--danger)}
+.tcard-chevron{color:var(--t3);transition:transform .2s;font-size:.8rem;flex-shrink:0}
+.tcard.open .tcard-chevron{transform:rotate(180deg)}
+
+.tcard-body{display:none;padding:0 16px 14px;border-top:1px solid var(--border)}
+.tcard.open .tcard-body{display:block}
+
+.tcard-msg{font-size:.8rem;color:var(--t2);padding:10px 0 12px;font-style:italic;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tcard-msg:empty{display:none}
+
+.tcard-files{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.tfile{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+.tfile-icon{font-size:1rem;flex-shrink:0}
+.tfile-name{font-size:.8rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tfile-size{font-size:.68rem;color:var(--t2);font-family:'DM Mono',monospace;white-space:nowrap}
+.btn-dl-file{padding:5px 12px;background:var(--accent);color:#000;border:none;border-radius:6px;
+  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.btn-dl-file:hover{background:var(--accent-d)}
+
+.tcard-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sm{padding:7px 14px;border-radius:7px;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;border:none;transition:all .12s;display:flex;align-items:center;gap:6px}
+.btn-sm-ghost{background:var(--s3);color:var(--t2)}.btn-sm-ghost:hover{background:var(--border2);color:var(--text)}
+.btn-sm-accent{background:var(--accent);color:#000}.btn-sm-accent:hover{background:var(--accent-d)}
+.btn-sm-danger{background:rgba(255,59,59,.1);color:var(--danger)}.btn-sm-danger:hover{background:rgba(255,59,59,.2)}
+
+.link-box{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+.link-text{font-size:.72rem;color:var(--t2);font-family:'DM Mono',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-copy{padding:5px 12px;background:var(--s3);border:1px solid var(--border2);border-radius:6px;
+  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--t2);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.btn-copy:hover{color:var(--text);border-color:var(--accent)}
+
+/* EMPTY */
+.tp-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--t3)}
+.tp-empty-icon{font-size:3rem;opacity:.25}
+.tp-empty h3{font-size:.95rem;font-weight:700;color:var(--t2)}
+.tp-empty p{font-size:.8rem;color:var(--t3)}
+
+/* UPLOAD PROGRESS OVERLAY */
+.progress-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);
+  z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.progress-overlay.on{display:flex}
+.prog-title{font-size:1.1rem;font-weight:800;letter-spacing:-.03em}
+.prog-file{font-size:.8rem;color:var(--t2);font-family:'DM Mono',monospace}
+.prog-track{width:320px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent);border-radius:99px;width:0%;transition:width .25s}
+.prog-pct{font-size:.75rem;color:var(--t2);font-family:'DM Mono',monospace}
+
+/* LINK MODAL */
+.link-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  z-index:400;display:none;align-items:center;justify-content:center}
+.link-modal-bg.on{display:flex}
+.link-modal{background:var(--s2);border:1px solid var(--border2);border-radius:16px;
+  padding:28px;width:420px;max-width:90vw;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lm-check{font-size:2.8rem}
+.lm-title{font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.lm-sub{font-size:.82rem;color:var(--t2)}
+.lm-link{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:9px;width:100%}
+.lm-link-text{font-size:.75rem;color:var(--t2);font-family:'DM Mono',monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.lm-actions{display:flex;gap:10px;width:100%;margin-top:4px}
+.lm-btn{flex:1;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.lm-btn-g{background:var(--s3);color:var(--t2)}.lm-btn-g:hover{background:var(--border2);color:var(--text)}
+.lm-btn-a{background:var(--accent);color:#000}.lm-btn-a:hover{background:var(--accent-d)}
+.lm-expire{font-size:.72rem;color:var(--t3);font-family:'DM Mono',monospace}
+
+/* DOWNLOAD PAGE */
+.dl-page{flex:1;display:none;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
+.dl-page.on{display:flex}
+.dl-card{width:100%;max-width:480px;background:var(--s2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.dl-hero{padding:28px 28px 20px;border-bottom:1px solid var(--border)}
+.dl-from{font-size:.72rem;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:6px}
+.dl-title{font-size:1.1rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.dl-msg{font-size:.83rem;color:var(--t2);font-style:italic;margin-top:4px}
+.dl-stats{display:flex;gap:16px;margin-top:12px}
+.dl-stat{font-size:.72rem;color:var(--t3);font-family:'DM Mono',monospace}
+.dl-stat span{color:var(--text);font-weight:600}
+.dl-files{padding:16px 28px}
+.dl-file{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;margin-bottom:8px}
+.dl-file-icon{font-size:1.1rem;flex-shrink:0}
+.dl-file-name{font-size:.82rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl-file-size{font-size:.7rem;color:var(--t2);font-family:'DM Mono',monospace;white-space:nowrap}
+.btn-dl-single{padding:6px 13px;background:var(--s3);border:1px solid var(--border2);border-radius:7px;
+  font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--t2);transition:all .12s;white-space:nowrap;flex-shrink:0}
+.btn-dl-single:hover{background:var(--accent);color:#000;border-color:var(--accent)}
+.dl-footer{padding:16px 28px;border-top:1px solid var(--border)}
+.btn-dl-all{width:100%;padding:13px;background:var(--accent);color:#000;border:none;border-radius:10px;
+  font-family:'Syne',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:-.01em}
+.btn-dl-all:hover{background:var(--accent-d)}
+.dl-expire{text-align:center;font-size:.7rem;color:var(--t3);margin-top:8px;font-family:'DM Mono',monospace}
+.dl-expired{text-align:center;padding:32px;color:var(--danger);font-size:.88rem}
+.dl-expired-icon{font-size:2.5rem;display:block;margin-bottom:10px;opacity:.5}
+
+/* TOASTS */
+.toast-area{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.toast{background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:9px 15px;
+  border-radius:9px;font-size:.8rem;box-shadow:0 4px 20px rgba(0,0,0,.5);max-width:260px;animation:tslide .2s ease}
+@keyframes tslide{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo"><div class="dot"></div>ONLYCLIK</div>
+  <div class="top-right">
+    <div class="top-tab on" id="tab-send" onclick="showTab('send')">Enviar</div>
+    <div class="top-tab" id="tab-transfers" onclick="showTab('transfers')">Mis transferencias</div>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ── SEND PANEL ── -->
+  <div class="send-panel" id="sendPanel">
+    <div class="send-card">
+      <div class="send-title">Compartí archivos.</div>
+      <div class="send-sub">Subí hasta 2 GB. Descarga directa, sin cuenta, sin registro.</div>
+
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" multiple onchange="addFiles(this.files)">
+        <div class="dz-icon">⬆</div>
+        <div class="dz-text">Arrastrá archivos o hacé clic aquí</div>
+        <div class="dz-sub">Cualquier formato · Hasta 2 GB en total</div>
+      </div>
+
+      <div class="file-list" id="fileList"></div>
+
+      <div class="size-bar-wrap" id="sizeBarWrap" style="display:none">
+        <div class="size-label">
+          <span>Archivos seleccionados</span>
+          <span id="sizeText">0 B / 2 GB</span>
+        </div>
+        <div class="size-track"><div class="size-fill" id="sizeFill"></div></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-label">Título del envío</div>
+        <input type="text" class="form-input" id="sendTitle" placeholder="Ej: Fotos del evento, Proyecto final...">
+      </div>
+
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-label">Mensaje (opcional)</div>
+        <textarea class="form-input" id="sendMsg" placeholder="Agrega una nota para quien descargue..."></textarea>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-row" style="margin-bottom:0">
+          <div class="form-label">Expira en</div>
+          <select class="form-input" id="sendExpiry">
+            <option value="1">1 día</option>
+            <option value="3">3 días</option>
+            <option value="7" selected>7 días</option>
+            <option value="14">14 días</option>
+            <option value="30">30 días</option>
+          </select>
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="form-label">Máx. descargas</div>
+          <select class="form-input" id="sendMaxDl">
+            <option value="0">Sin límite</option>
+            <option value="1">1 vez</option>
+            <option value="5">5 veces</option>
+            <option value="10">10 veces</option>
+            <option value="25">25 veces</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-send" id="btnSend" onclick="createTransfer()" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Generar enlace de descarga
+      </button>
+    </div>
+  </div>
+
+  <!-- ── TRANSFERS PANEL ── -->
+  <div class="transfers-panel" id="transfersPanel">
+    <div class="tp-header">
+      <div class="tp-title">Mis transferencias</div>
+      <div class="tp-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar..." id="tpSearch" oninput="renderTransfers()">
+      </div>
+    </div>
+    <div class="tp-list" id="tpList"></div>
+  </div>
+
+  <!-- ── DOWNLOAD PAGE ── -->
+  <div class="dl-page" id="dlPage">
+    <div class="dl-card" id="dlCard"></div>
+  </div>
+
+</div>
+
+<!-- PROGRESS OVERLAY -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="prog-title">PREPARANDO TRANSFERENCIA</div>
+  <div class="prog-file" id="progFile">Procesando archivos...</div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <div class="prog-pct" id="progPct">0%</div>
+</div>
+
+<!-- LINK MODAL -->
+<div class="link-modal-bg" id="linkModalBg">
+  <div class="link-modal">
+    <div class="lm-check">✅</div>
+    <div class="lm-title">¡Listo para compartir!</div>
+    <div class="lm-sub">Copiá el enlace y mandáselo a quien quieras</div>
+    <div class="lm-link">
+      <div class="lm-link-text" id="lmLinkText"></div>
+      <button class="btn-copy" onclick="copyLinkModal()">Copiar</button>
+    </div>
+    <div class="lm-expire" id="lmExpire"></div>
+    <div class="lm-actions">
+      <button class="lm-btn lm-btn-g" onclick="closeLinkModal()">Cerrar</button>
+      <button class="lm-btn lm-btn-a" onclick="viewTransfer()">Ver transferencia</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-area" id="toastArea"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// IndexedDB
+// ══════════════════════════════════════════════════════════════
+const DB_NAME='onlyclik_wt', DB_VER=1, STORE='transfers';
+let db;
+
+function dbOpen(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(DB_NAME,DB_VER);
+    r.onupgradeneeded=e=>{
+      if(!e.target.result.objectStoreNames.contains(STORE))
+        e.target.result.createObjectStore(STORE,{keyPath:'id'});
+    };
+    r.onsuccess=e=>{db=e.target.result;res();};
+    r.onerror=()=>rej(r.error);
+  });
+}
+const st=m=>db.transaction(STORE,m).objectStore(STORE);
+const dbAll=()=>new Promise((r,f)=>{const q=st('readonly').getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>f(q.error);});
+const dbGet=id=>new Promise((r,f)=>{const q=st('readonly').get(id);q.onsuccess=()=>r(q.result);q.onerror=()=>f(q.error);});
+const dbPut=o=>new Promise((r,f)=>{const q=st('readwrite').put(o);q.onsuccess=()=>r();q.onerror=()=>f(q.error);});
+const dbDel=id=>new Promise((r,f)=>{const q=st('readwrite').delete(id);q.onsuccess=()=>r();q.onerror=()=>f(q.error);});
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let pendingFiles=[];
+const MAX_SIZE=2*1024*1024*1024; // 2GB
+let lastCreatedId=null;
+
+const EMO={image:'🖼️',video:'🎬',audio:'🎵',doc:'📄',zip:'📦',other:'📎'};
+function getcat(mime,name){
+  mime=mime||'';
+  if(mime.startsWith('image/'))return 'image';
+  if(mime.startsWith('video/'))return 'video';
+  if(mime.startsWith('audio/'))return 'audio';
+  if(mime.includes('zip')||mime.includes('rar')||/\.(zip|rar|7z|tar|gz)$/i.test(name))return 'zip';
+  if(mime.includes('pdf')||mime.includes('word')||mime.includes('text')||/\.(pdf|doc|docx|txt|md|csv|xlsx|pptx|json|xml)$/i.test(name))return 'doc';
+  return 'other';
+}
+function fmtB(b){
+  if(!b)return '0 B';
+  if(b<1024)return b+' B';
+  if(b<1048576)return(b/1024).toFixed(1)+' KB';
+  if(b<1073741824)return(b/1048576).toFixed(1)+' MB';
+  return(b/1073741824).toFixed(2)+' GB';
+}
+function fmtDate(ts){return new Date(ts).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function readURL(f){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.onerror=()=>j(rd.error);rd.readAsDataURL(f);});}
+function isExpired(t){return t.expiresAt && Date.now()>t.expiresAt;}
+function daysLeft(t){if(isExpired(t))return 0;return Math.ceil((t.expiresAt-Date.now())/86400000);}
+
+// ══════════════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function showTab(tab){
+  document.getElementById('sendPanel').style.display=tab==='send'?'flex':'none';
+  document.getElementById('transfersPanel').classList.toggle('on',tab==='transfers');
+  document.getElementById('dlPage').classList.remove('on');
+  document.getElementById('tab-send').classList.toggle('on',tab==='send');
+  document.getElementById('tab-transfers').classList.toggle('on',tab==='transfers');
+  if(tab==='transfers') renderTransfers();
+}
+
+// ══════════════════════════════════════════════════════════════
+// FILE SELECTION
+// ══════════════════════════════════════════════════════════════
+function addFiles(fl){
+  Array.from(fl).forEach(f=>{
+    if(!pendingFiles.find(p=>p.name===f.name&&p.size===f.size))
+      pendingFiles.push(f);
+  });
+  renderPending();
+  document.getElementById('fileInput').value='';
+}
+
+function removeFile(i){
+  pendingFiles.splice(i,1);
+  renderPending();
+}
+
+function renderPending(){
+  const list=document.getElementById('fileList');
+  const sizeWrap=document.getElementById('sizeBarWrap');
+  const btn=document.getElementById('btnSend');
+
+  if(!pendingFiles.length){
+    list.innerHTML='';
+    sizeWrap.style.display='none';
+    btn.disabled=true;
+    return;
+  }
+
+  const total=pendingFiles.reduce((s,f)=>s+f.size,0);
+  const pct=Math.min((total/MAX_SIZE)*100,100);
+  document.getElementById('sizeFill').style.width=pct+'%';
+  document.getElementById('sizeText').textContent=fmtB(total)+' / 2 GB';
+  sizeWrap.style.display='block';
+
+  list.innerHTML=pendingFiles.map((f,i)=>`
+    <div class="fitem">
+      <span class="fitem-icon">${EMO[getcat(f.type,f.name)]||'📎'}</span>
+      <div class="fitem-info">
+        <div class="fitem-name">${f.name}</div>
+        <div class="fitem-size">${fmtB(f.size)}</div>
+      </div>
+      <button class="fitem-del" onclick="removeFile(${i})" title="Quitar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+
+  btn.disabled = total>MAX_SIZE;
+}
+
+// ══════════════════════════════════════════════════════════════
+// CREATE TRANSFER
+// ══════════════════════════════════════════════════════════════
+async function createTransfer(){
+  if(!pendingFiles.length) return;
+  const total=pendingFiles.reduce((s,f)=>s+f.size,0);
+  if(total>MAX_SIZE){toast('⚠️ Tamaño total supera los 2 GB');return;}
+
+  const title=document.getElementById('sendTitle').value.trim()||'Sin título';
+  const msg=document.getElementById('sendMsg').value.trim();
+  const expDays=+document.getElementById('sendExpiry').value;
+  const maxDl=+document.getElementById('sendMaxDl').value;
+
+  const overlay=document.getElementById('progressOverlay');
+  overlay.classList.add('on');
+
+  const files=[];
+  for(let i=0;i<pendingFiles.length;i++){
+    const f=pendingFiles[i];
+    document.getElementById('progFile').textContent=`Procesando: ${f.name}`;
+    const pct=Math.round(((i+.5)/pendingFiles.length)*100);
+    document.getElementById('progFill').style.width=pct+'%';
+    document.getElementById('progPct').textContent=pct+'%';
+    const url=await readURL(f);
+    files.push({name:f.name,size:f.size,mime:f.type,cat:getcat(f.type,f.name),url});
+    document.getElementById('progFill').style.width=Math.round(((i+1)/pendingFiles.length)*100)+'%';
+  }
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('progPct').textContent='100%';
+
+  const id=genId();
+  const transfer={
+    id,title,msg,files,
+    createdAt:Date.now(),
+    expiresAt:Date.now()+(expDays*86400000),
+    maxDl: maxDl||0,
+    dlCount:0,
+  };
+  await dbPut(transfer);
+  lastCreatedId=id;
+
+  overlay.classList.remove('on');
+
+  // Reset form
+  pendingFiles=[];
+  renderPending();
+  document.getElementById('sendTitle').value='';
+  document.getElementById('sendMsg').value='';
+
+  // Show link modal
+  const link=makeLink(id);
+  document.getElementById('lmLinkText').textContent=link;
+  document.getElementById('lmExpire').textContent=`Expira en ${expDays} día${expDays===1?'':'s'}${maxDl?` · Máx. ${maxDl} descarga${maxDl===1?'':'s'}`:''}`;
+  document.getElementById('linkModalBg').classList.add('on');
+  toast('✅ Transferencia creada');
+}
+
+function makeLink(id){
+  return window.location.href.split('?')[0].split('#')[0]+'?dl='+id;
+}
+
+function closeLinkModal(){ document.getElementById('linkModalBg').classList.remove('on'); }
+function copyLinkModal(){
+  navigator.clipboard.writeText(document.getElementById('lmLinkText').textContent).catch(()=>{});
+  toast('🔗 Enlace copiado');
+}
+function viewTransfer(){
+  closeLinkModal();
+  openDownloadPage(lastCreatedId);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TRANSFERS LIST
+// ══════════════════════════════════════════════════════════════
+async function renderTransfers(){
+  const all=await dbAll();
+  const q=document.getElementById('tpSearch').value.toLowerCase();
+  const list=all.filter(t=>!q||t.title.toLowerCase().includes(q)).sort((a,b)=>b.createdAt-a.createdAt);
+  const container=document.getElementById('tpList');
+
+  if(!list.length){
+    container.innerHTML=`<div class="tp-empty">
+      <div class="tp-empty-icon">📭</div>
+      <h3>Sin transferencias</h3>
+      <p>Enviá archivos para verlos acá</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML=list.map(t=>{
+    const exp=isExpired(t);
+    const totalSize=t.files.reduce((s,f)=>s+f.size,0);
+    return `<div class="tcard" id="tc-${t.id}">
+      <div class="tcard-header" onclick="toggleCard('${t.id}')">
+        <div>
+          <div class="tcard-title">${t.title}</div>
+          <div class="tcard-meta">${t.files.length} archivo${t.files.length===1?'':'s'} · ${fmtB(totalSize)} · ${fmtDate(t.createdAt)}</div>
+        </div>
+        <span class="tcard-badge ${exp?'expired':'active'}">${exp?'Expirado':`${daysLeft(t)}d`}</span>
+        <span class="tcard-chevron">▾</span>
+      </div>
+      <div class="tcard-body">
+        ${t.msg?`<div class="tcard-msg">"${t.msg}"</div>`:''}
+        <div class="link-box">
+          <div class="link-text">${makeLink(t.id)}</div>
+          <button class="btn-copy" onclick="copyLink('${t.id}')">Copiar</button>
+        </div>
+        <div class="tcard-files">
+          ${t.files.map((f,fi)=>`<div class="tfile">
+            <span class="tfile-icon">${EMO[f.cat]||'📎'}</span>
+            <div class="tfile-name">${f.name}</div>
+            <div class="tfile-size">${fmtB(f.size)}</div>
+            <button class="btn-dl-file" onclick="dlSingle('${t.id}',${fi})">⬇ Descargar</button>
+          </div>`).join('')}
+        </div>
+        <div class="tcard-actions">
+          <button class="btn-sm btn-sm-accent" onclick="openDownloadPage('${t.id}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ver página de descarga
+          </button>
+          <button class="btn-sm btn-sm-ghost" onclick="copyLink('${t.id}')">🔗 Copiar enlace</button>
+          <button class="btn-sm btn-sm-danger" onclick="deleteTransfer('${t.id}')">🗑 Eliminar</button>
+        </div>
+        <div style="font-size:.68rem;color:var(--t3);font-family:'DM Mono',monospace;margin-top:8px">
+          ${t.dlCount} descarga${t.dlCount===1?'':'s'}${t.maxDl?` / ${t.maxDl}`:''} · Expira: ${fmtDate(t.expiresAt)}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id){
+  const el=document.getElementById('tc-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+async function copyLink(id){
+  await navigator.clipboard.writeText(makeLink(id)).catch(()=>{});
+  toast('🔗 Enlace copiado');
+}
+
+async function deleteTransfer(id){
+  if(!confirm('¿Eliminar esta transferencia? Se perderán los archivos.')) return;
+  await dbDel(id);
+  renderTransfers();
+  toast('🗑️ Eliminado');
+}
+
+async function dlSingle(tid, fi){
+  const t=await dbGet(tid);
+  if(!t) return;
+  const f=t.files[fi];
+  const a=document.createElement('a');
+  a.href=f.url; a.download=f.name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+  // Count download
+  t.dlCount=(t.dlCount||0)+1;
+  await dbPut(t);
+  renderTransfers();
+  toast(`⬇ Descargando ${f.name}`);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DOWNLOAD PAGE
+// ══════════════════════════════════════════════════════════════
+async function openDownloadPage(id){
+  document.getElementById('sendPanel').style.display='none';
+  document.getElementById('transfersPanel').classList.remove('on');
+  document.getElementById('dlPage').classList.add('on');
+  document.getElementById('tab-send').classList.remove('on');
+  document.getElementById('tab-transfers').classList.remove('on');
+
+  const t=await dbGet(id);
+  const card=document.getElementById('dlCard');
+
+  if(!t){
+    card.innerHTML=`<div class="dl-expired"><span class="dl-expired-icon">🔗</span>Enlace no encontrado o inválido.</div>`;
+    return;
+  }
+
+  if(isExpired(t)){
+    card.innerHTML=`<div class="dl-expired"><span class="dl-expired-icon">⌛</span>Esta transferencia ha expirado.</div>`;
+    return;
+  }
+
+  if(t.maxDl>0 && t.dlCount>=t.maxDl){
+    card.innerHTML=`<div class="dl-expired"><span class="dl-expired-icon">🚫</span>Límite de descargas alcanzado.</div>`;
+    return;
+  }
+
+  const totalSize=t.files.reduce((s,f)=>s+f.size,0);
+
+  card.innerHTML=`
+    <div class="dl-hero">
+      <div class="dl-from">Transferencia disponible</div>
+      <div class="dl-title">${t.title}</div>
+      ${t.msg?`<div class="dl-msg">"${t.msg}"</div>`:''}
+      <div class="dl-stats">
+        <div class="dl-stat"><span>${t.files.length}</span> archivo${t.files.length===1?'':'s'}</div>
+        <div class="dl-stat"><span>${fmtB(totalSize)}</span> total</div>
+        <div class="dl-stat">Expira en <span>${daysLeft(t)}</span> día${daysLeft(t)===1?'':'s'}</div>
+      </div>
+    </div>
+    <div class="dl-files">
+      ${t.files.map((f,fi)=>`
+        <div class="dl-file">
+          <span class="dl-file-icon">${EMO[f.cat]||'📎'}</span>
+          <div class="dl-file-name">${f.name}</div>
+          <div class="dl-file-size">${fmtB(f.size)}</div>
+          <button class="btn-dl-single" onclick="dlPageSingle('${id}',${fi})">⬇</button>
+        </div>`).join('')}
+    </div>
+    <div class="dl-footer">
+      <button class="btn-dl-all" onclick="dlPageAll('${id}')">
+        ⬇ Descargar todo (${fmtB(totalSize)})
+      </button>
+      <div class="dl-expire">Expira el ${fmtDate(t.expiresAt)}</div>
+    </div>`;
+}
+
+async function dlPageSingle(tid, fi){
+  const t=await dbGet(tid); if(!t) return;
+  const f=t.files[fi];
+  const a=document.createElement('a'); a.href=f.url; a.download=f.name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast(`⬇ ${f.name}`);
+}
+
+async function dlPageAll(tid){
+  const t=await dbGet(tid); if(!t) return;
+  if(isExpired(t)){toast('⌛ Esta transferencia expiró');return;}
+  if(t.maxDl>0&&t.dlCount>=t.maxDl){toast('🚫 Límite de descargas alcanzado');return;}
+
+  for(const f of t.files){
+    const a=document.createElement('a'); a.href=f.url; a.download=f.name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    await new Promise(r=>setTimeout(r,200));
+  }
+  t.dlCount=(t.dlCount||0)+1;
+  await dbPut(t);
+  toast(`✅ Descargando ${t.files.length} archivo${t.files.length===1?'':'s'}`);
+  openDownloadPage(tid); // refresh stats
+}
+
+// ══════════════════════════════════════════════════════════════
+// DRAG & DROP ON DROP ZONE
+// ══════════════════════════════════════════════════════════════
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('over');
+  if(e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+});
+
+// ══════════════════════════════════════════════════════════════
+// URL ROUTER — check ?dl=id on load
+// ══════════════════════════════════════════════════════════════
+function checkRoute(){
+  const params=new URLSearchParams(window.location.search);
+  const dlId=params.get('dl');
+  if(dlId) openDownloadPage(dlId);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+function toast(msg){
+  const a=document.getElementById('toastArea');
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  a.appendChild(t);
+  setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(12px);transition:all .25s';setTimeout(()=>t.remove(),250);},2800);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+dbOpen().then(checkRoute).catch(e=>{console.error(e);toast('⚠️ Error al inicializar');});
+</script>
+</body>
+</html>
